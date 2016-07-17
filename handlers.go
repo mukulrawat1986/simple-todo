@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func Index(w http.ResponseWriter, r *http.Request) {
+func TodoIndex(w http.ResponseWriter, r *http.Request) {
 	todos := Todos{
 		Todo{Name: "Write Presentation"},
 		Todo{Name: "Host Meetup"},
@@ -28,6 +28,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 func TodoShow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	todoId := vars("todoId")
+	todoId := vars["todoId"]
 	fmt.Fprintln(w, "Todo show: ", todoId)
 }
