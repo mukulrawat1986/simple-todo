@@ -31,7 +31,7 @@ func RepoCreateTodo(t Todo) Todo {
 
 func RepoDestroyTodo(id int) error {
 	for i, t := range todos {
-		if t.id == id {
+		if t.Id == id {
 			todos = append(todos[:i], todos[i+1:]...)
 			return nil
 		}
