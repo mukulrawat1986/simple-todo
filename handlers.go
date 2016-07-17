@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -36,6 +37,8 @@ func TodoCreate(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json;charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 	if err := json.NewEncoder(w).Encode(t); err != nil {
+		log.Fatalf("Error when encoding json")
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
 
@@ -45,7 +48,7 @@ func TodoIndex(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	if err := json.NewEncoder(w).Encode(todos); err != nil {
-		log.Fatalf("Error when decoding json")
+		log.Fatalf("Error when encoding json")
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
@@ -58,11 +61,26 @@ func Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func TodoShow(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	todoId := vars["todoId"]
-
+	todoId := mux.Vars(r)["todoId"]
 	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 
-	fmt.Fprintln(w, "Todo show: ", todoId)
+	id, err := strconv.Atoi(todoId)
+	if err != nil {
+		log.Fatalf("Error while converting string to int %s", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	for _, todo := range todos {
+		if todo.Id == id {
+			if err := json.NewEncoder(w).Encode(todo); err != nil {
+				log.Fatalf("Error when encoding json")
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+			return
+		}
+	}
+
+	log.Fatalf("Id not in use %d", id)
+	w.WriteHeader(http.StatusInternalServerError)
 }
