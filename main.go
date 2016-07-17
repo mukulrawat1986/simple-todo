@@ -13,9 +13,9 @@ import (
 
 // our Model
 type Todo struct {
-	Name      string
-	Completed bool
-	Due       time.Time
+	Name      string    `json:"name"`
+	Completed bool      `json:"completed"`
+	Due       time.Time `json:"due"`
 }
 
 type Todos []Todo
